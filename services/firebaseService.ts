@@ -54,9 +54,12 @@ export const addClass = async (classEvent: Omit<ClassEvent, 'id'>): Promise<stri
 export const deleteClass = async (id: string): Promise<void> => {
   try {
     const firestore = getDb();
-    await deleteDoc(doc(firestore, CLASSES_COLLECTION, id));
+    const docRef = doc(firestore, CLASSES_COLLECTION, id);
+    console.log(`Deleting class document at path: ${docRef.path}`); // Debugging log
+    await deleteDoc(docRef);
+    console.log(`Class with ID: ${id} deleted successfully`); // Debugging log
   } catch (error) {
-    console.error("Error deleting class:", error);
+    console.error(`Error deleting class with ID: ${id}`, error); // Debugging log
     throw error;
   }
 };
@@ -90,9 +93,12 @@ export const addShift = async (shiftEvent: Omit<ShiftEvent, 'id'>): Promise<stri
 export const deleteShift = async (id: string): Promise<void> => {
   try {
     const firestore = getDb();
-    await deleteDoc(doc(firestore, SHIFTS_COLLECTION, id));
+    const docRef = doc(firestore, SHIFTS_COLLECTION, id);
+    console.log(`Deleting shift document at path: ${docRef.path}`); // Debugging log
+    await deleteDoc(docRef);
+    console.log(`Shift with ID: ${id} deleted successfully`); // Debugging log
   } catch (error) {
-    console.error("Error deleting shift:", error);
+    console.error(`Error deleting shift with ID: ${id}`, error); // Debugging log
     throw error;
   }
 };
@@ -191,4 +197,4 @@ export const deleteOnCallDay = async (date: string): Promise<void> => {
     console.error("Error deleting on-call day:", error);
     throw error;
   }
-}; 
+};

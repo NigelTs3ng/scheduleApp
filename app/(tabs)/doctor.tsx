@@ -1,5 +1,5 @@
 import { Colors } from '@/constants/Colors';
-import { ShiftEvent, ShiftType, useSchedule } from '@/contexts/ScheduleContext';
+import { ShiftType, useSchedule } from '@/contexts/ScheduleContext';
 import { useColorScheme } from '@/hooks/useColorScheme';
 import { StatusBar } from 'expo-status-bar';
 import React, { useEffect, useState } from 'react';
@@ -41,6 +41,11 @@ export default function DoctorScreen() {
   useEffect(() => {
     setIsOnCall(onCallDays.includes(selectedDate));
   }, [selectedDate, onCallDays]);
+  
+  // Add debugging to confirm UI re-renders with updated shifts
+  useEffect(() => {
+    console.log('Rendering shifts for selected date:', getShiftsForSelectedDate());
+  }, [shifts, selectedDate]);
   
   // Update the `updateMarkedDates` function to ensure it correctly handles state updates and creates a new object reference for `markedDates`.
   const updateMarkedDates = () => {
@@ -124,26 +129,23 @@ export default function DoctorScreen() {
       Alert.alert('Missing Information', 'Please fill in all required fields');
       return;
     }
-    
-    const newShift: ShiftEvent = {
-      id: Date.now().toString(),
+
+    addShiftEvent({
       title: shiftTitle,
       startTime,
       endTime,
       location,
       date: selectedDate,
       type: shiftType,
-    };
-    
-    addShiftEvent(newShift);
-    
+    });
+
     // Reset form
     setShiftTitle('');
     setShiftType('morning');
     setStartTime('');
     setEndTime('');
     setLocation('');
-    
+
     Alert.alert('Success', 'Shift added successfully');
   };
   
@@ -169,7 +171,9 @@ export default function DoctorScreen() {
     return onCallDays.includes(selectedDate);
   };
   
+  // Add debugging to ensure the correct shift ID is passed to removeShiftEvent
   const handleDeleteShift = (shiftId: string) => {
+    console.log('Attempting to delete shift with ID:', shiftId); // Debugging log
     Alert.alert(
       'Delete Shift',
       'Are you sure you want to delete this shift?',
@@ -178,7 +182,14 @@ export default function DoctorScreen() {
         { 
           text: 'Delete', 
           style: 'destructive',
-          onPress: () => removeShiftEvent(shiftId)
+          onPress: () => {
+            try {
+              removeShiftEvent(shiftId);
+              console.log('Shift deleted successfully'); // Debugging log
+            } catch (error) {
+              console.error('Error deleting shift:', error); // Debugging log
+            }
+          }
         },
       ]
     );

@@ -1,5 +1,5 @@
 import { Colors } from '@/constants/Colors';
-import { ClassEvent, useSchedule } from '@/contexts/ScheduleContext';
+import { useSchedule } from '@/contexts/ScheduleContext';
 import { useColorScheme } from '@/hooks/useColorScheme';
 import { StatusBar } from 'expo-status-bar';
 import React, { useEffect, useState } from 'react';
@@ -81,16 +81,13 @@ export default function TeacherScreen() {
       return;
     }
     
-    const newClass: ClassEvent = {
-      id: Date.now().toString(),
+    addClassEvent({
       title: className,
       startTime,
       endTime,
       location,
       date: selectedDate,
-    };
-    
-    addClassEvent(newClass);
+    });
     
     // Reset form
     setClassName('');
@@ -109,7 +106,9 @@ export default function TeacherScreen() {
     return teacherOffDays.includes(selectedDate);
   };
   
+  // Add debugging to ensure the correct class ID is passed to removeClassEvent
   const handleDeleteClass = (classId: string) => {
+    console.log('Attempting to delete class with ID:', classId); // Debugging log
     Alert.alert(
       'Delete Class',
       'Are you sure you want to delete this class?',
@@ -118,11 +117,23 @@ export default function TeacherScreen() {
         { 
           text: 'Delete', 
           style: 'destructive',
-          onPress: () => removeClassEvent(classId)
+          onPress: () => {
+            try {
+              removeClassEvent(classId);
+              console.log('Class deleted successfully'); // Debugging log
+            } catch (error) {
+              console.error('Error deleting class:', error); // Debugging log
+            }
+          }
         },
       ]
     );
   };
+  
+  // Add debugging to confirm UI re-renders with updated classes
+  useEffect(() => {
+    console.log('Rendering classes for selected date:', getClassesForSelectedDate());
+  }, [classes, selectedDate]);
   
   return (
     <SafeAreaView style={[styles.container, { backgroundColor: Colors[colorScheme ?? 'light'].background }]}>

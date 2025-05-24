@@ -437,10 +437,15 @@ export const ScheduleProvider: React.FC<{ children: ReactNode }> = ({ children }
 
   const removeClassEvent = async (eventId: string) => {
     try {
-      await deleteClass(eventId);
-      setClasses(prevClasses => prevClasses.filter(classEvent => classEvent.id !== eventId));
+      console.log(`Removing class event with ID: ${eventId}`); // Debugging log
+      await deleteClass(eventId); // Ensure the backend class is deleted
+      setClasses(prevClasses => {
+        const updatedClasses = prevClasses.filter(classEvent => classEvent.id !== eventId);
+        console.log('Updated classes after deletion:', updatedClasses); // Debugging log
+        return updatedClasses;
+      });
     } catch (error) {
-      console.error("Error removing class:", error);
+      console.error(`Error removing class event with ID: ${eventId}`, error); // Debugging log
       throw error;
     }
   };
@@ -473,10 +478,16 @@ export const ScheduleProvider: React.FC<{ children: ReactNode }> = ({ children }
 
   const removeShiftEvent = async (eventId: string) => {
     try {
+      console.log(`Removing shift event with ID: ${eventId}`); // Debugging log
       await deleteShift(eventId); // Ensure the backend shift is deleted
-      setShifts(prevShifts => prevShifts.filter(shift => shift.id !== eventId)); // Update local state
+      console.log(`Shift with ID: ${eventId} passed to deleteShift`); // Debugging log
+      setShifts(prevShifts => {
+        const updatedShifts = prevShifts.filter(shift => shift.id !== eventId);
+        console.log('Updated shifts after deletion:', updatedShifts); // Debugging log
+        return updatedShifts;
+      });
     } catch (error) {
-      console.error("Error removing shift:", error);
+      console.error(`Error removing shift event with ID: ${eventId}`, error); // Debugging log
       throw error;
     }
   };
